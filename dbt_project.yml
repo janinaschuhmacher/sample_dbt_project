@@ -1,0 +1,10 @@
+name: dbt_learning_local
+version: 1.0.0
+config-version: 2
+
+profile: dbt_learning_local
+
+model-paths: ["models"]
+clean-targets:
+  - "target"
+  - "dbt_packages"
