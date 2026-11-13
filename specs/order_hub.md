@@ -7,7 +7,7 @@ Represent each distinct order identified by its business key.
 One row per distinct order business key.
 
 ## Source
-`stg_orders`
+`stg_sales_orders`
 
 ## Business key
 `order_id`

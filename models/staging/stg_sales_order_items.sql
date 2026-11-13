@@ -13,17 +13,8 @@ with source_data as (
 
 hashed as (
     select 
-        md5(concat_ws('||',
-            coalesce(upper(trim(cast(order_id as varchar))), ''),
-            coalesce(upper(trim(cast(order_position as varchar))), '')
-        )) as hub_sales_order_position_item_hk,
-        md5(upper(trim(cast(order_id as varchar)))) as hub_sales_order_hk,
-        md5(concat_ws('||',
-            coalesce(cast(product_id as varchar), ''),
-            coalesce(cast(quantity as varchar), ''),
-            coalesce(cast(unit_price as varchar), ''),
-            coalesce(cast(line_amount as varchar), '')
-        )) as hash_diff,
+        {{generate_hash_key(['order_id', 'order_position'], alias='sales_order_position_item_hk') }},
+        {{generate_hash_key(['order_id'], alias='sales_order_hk') }},
         message_id,
         message_ts,
         order_id,

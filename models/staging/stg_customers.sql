@@ -8,11 +8,7 @@ with source_data as (
 
 hashed as (
     select
-        md5(upper(trim(cast(customer_id as varchar)))) as hub_customer_hk,
-        md5(concat_ws('||',
-            coalesce(cast(signup_date as varchar), ''),
-            coalesce(country, '')
-        )) as hash_diff,
+        {{generate_hash_key(['customer_id'], alias='customer_hk') }},
         customer_id,
         signup_date,
         country,

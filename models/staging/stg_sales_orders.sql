@@ -11,12 +11,8 @@ with source_data as (
 
 hashed as (
     select 
-        md5(upper(trim(cast(order_id as varchar)))) as hub_sales_order_hk,
-        md5(upper(trim(cast(customer_id as varchar)))) as hub_customer_hk,
-        md5(concat_ws('||',
-            coalesce(cast(order_date as varchar), ''),
-            coalesce(status, '')
-        )) as hash_diff,
+        {{generate_hash_key(['order_id'], alias='sales_order_hk') }},
+        {{generate_hash_key(['customer_id'], alias='customer_hk') }},
         message_id,
         message_ts,
         order_id,
