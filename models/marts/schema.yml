@@ -1,0 +1,80 @@
+models:
+  - name: hub_customers
+    columns:
+      - name: customer_hk
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+
+  - name: hub_sales_orders
+    columns:
+      - name: sales_order_hk
+        tests:
+          - unique
+          - not_null
+      - name: sales_order_id
+        tests:
+          - unique
+          - not_null
+
+  - name: hub_sales_order_position_items
+    columns:
+      - name: sales_order_position_item_hk
+        tests:
+          - unique
+          - not_null
+      - name: sales_order_position_item_id
+        tests:
+          - unique
+          - not_null
+
+  - name: lnk_customer_sales_order
+    columns:
+      - name: customer_sales_order_lk
+        tests:
+          - unique
+          - not_null
+
+  - name: lnk_sales_order_sales_order_position_item
+    columns:
+      - name: sales_order_sales_order_position_item_lk
+        tests:
+          - unique
+          - not_null
+
+  - name: sat_customer_details
+    columns:
+      - name: customer_hk
+        tests:
+          - not_null
+      - name: hash_diff
+        tests:
+          - not_null
+      - name: signup_date
+        tests:
+          - not_null
+      - name: country
+        tests:
+          - not_null
+
+  - name: sat_sales_order_position_item_details
+    columns:
+      - name: sales_order_hk
+        tests:
+          - not_null
+      - name: hash_diff
+        tests:
+          - not_null
+      - name: order_id
+        tests:
+          - not_null
+      - name: order_date
+        tests:
+          - not_null
+      - name: status
+        tests:
+          - not_null

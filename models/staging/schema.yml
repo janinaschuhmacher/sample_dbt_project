@@ -6,6 +6,12 @@ models:
         tests:
           - unique
           - not_null
+      - name: signup_date
+        tests:
+          - not_null
+      - name: country
+        tests:
+          - not_null
 
   - name: stg_sales_orders
     description: Cleaned sales order records
