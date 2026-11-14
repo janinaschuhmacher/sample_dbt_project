@@ -1,21 +1,62 @@
-{{ config(materialized='incremental') }}
+{{ 
+    config(
+        materialized='incremental',
+        unique_key=['customer_hk', 'load_ts'],
+        on_schema_change='append_new_columns',
+        cluster_by=['customer_hk', 'load_ts'],
+        tags=['raw_vault', 'satellite']
+    ) 
+}}
 
-with source_data as (
+with source_data AS (
     select
-        customer_hk,
-        customer_id,
-        signup_date,
-        country,
-        load_ts,
-        record_source
+        *
     from {{ ref('stg_customers') }}
 )
 
-select
-    customer_hk,
-    {{ generate_hash_key(['signup_date', 'country'], alias='hash_diff') }},
-    signup_date,
-    country,
-    load_ts,
-    record_source
-from source_data
+-- Get the most recent hash_diff for each customer_hk already in the Satellite
+most_recent_satellite AS (
+    SELECT
+        customer_hk,
+        hash_diff AS latest_hash_diff,
+        load_ts AS latest_load_ts
+    FROM (
+        SELECT
+            customer_hk,
+            hash_diff,
+            load_ts,
+            ROW_NUMBER() OVER (
+                PARTITION BY customer_hk
+                ORDER BY load_ts DESC
+            ) AS rn
+        FROM {{ this }}
+        {% if is_incremental() %}
+        -- No WHERE needed here; we need latest row per key
+        {% endif %}
+    ) ranked
+    WHERE rn = 1
+),
+
+-- Only insert rows where the hash_diff has changed
+new_or_changed AS (
+    SELECT
+        s.customer_hk,
+        {{ generate_hash_key(['s.signup_date', 's.country'], alias='hash_diff') }},
+        s.signup_date,
+        s.country,
+        s.load_ts,
+        s.record_source
+    FROM source_data s
+
+    {% if is_incremental() %}
+    LEFT JOIN most_recent_satellite m ON s.customer_hk = m.customer_hk
+    WHERE
+        -- New customer (never seen before)
+        m.customer_hk IS NULL
+        OR
+        -- Existing customer with changed attributes
+        s.hash_diff != m.latest_hash_diff
+    {% endif %}
+)
+
+SELECT * FROM new_or_changed
