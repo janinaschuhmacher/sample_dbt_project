@@ -8,13 +8,10 @@
     ) 
 }}
 
-with source_data AS (
-    select
-        *
-    from {{ ref('stg_customers') }}
-)
-
--- Get the most recent hash_diff for each customer_hk already in the Satellite
+WITH source_data AS (
+    SELECT *
+    FROM {{ ref('stg_customers') }}
+),
 most_recent_satellite AS (
     SELECT
         customer_hk,
@@ -36,8 +33,6 @@ most_recent_satellite AS (
     ) ranked
     WHERE rn = 1
 ),
-
--- Only insert rows where the hash_diff has changed
 new_or_changed AS (
     SELECT
         s.customer_hk,
@@ -59,4 +54,5 @@ new_or_changed AS (
     {% endif %}
 )
 
-SELECT * FROM new_or_changed
+SELECT *
+FROM new_or_changed

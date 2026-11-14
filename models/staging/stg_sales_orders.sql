@@ -8,9 +8,9 @@ with source_data as (
 ),
 
 hashed as (
-    select 
-        {{generate_hash_key(['order_id'], alias='sales_order_hk') }},
-        {{generate_hash_key(['customer_id'], alias='customer_hk') }},
+    select
+        {{ generate_hash_key(['order_id'], alias='sales_order_hk') }},
+        {{ generate_hash_key(['customer_id'], alias='customer_hk') }},
         order_id,
         customer_id,
         order_date,

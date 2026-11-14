@@ -30,9 +30,9 @@ deduped AS (
     FROM source_data
 
     {% if is_incremental() %}
-    WHERE sales_order_position_item_hk NOT IN (
-        SELECT sales_order_position_item_hk FROM {{ this }}
-    )
+        WHERE sales_order_position_item_hk NOT IN (
+            SELECT sales_order_position_item_hk FROM {{ this }}
+        )
     {% endif %}
 )
 

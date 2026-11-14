@@ -8,13 +8,11 @@
     ) 
 }}
 
-with source_data AS (
-    select
-        *
-    from {{ ref('stg_sales_orders') }}
-)
+WITH source_data AS (
+    SELECT *
+    FROM {{ ref('stg_sales_orders') }}
+),
 
--- Get the most recent hash_diff for each sales_order_hk already in the Satellite
 most_recent_satellite AS (
     SELECT
         sales_order_hk,
@@ -33,21 +31,20 @@ most_recent_satellite AS (
         {% if is_incremental() %}
         -- No WHERE needed here; we need latest row per key
         {% endif %}
-    ) ranked
+    ) AS ranked
     WHERE rn = 1
 ),
 
--- Only insert rows where the hash_diff has changed
 new_or_changed AS (
     SELECT
         s.sales_order_hk,
-        {{generate_hash_key(['s.order_date', 's.status'], alias='hash_diff') }},
+        {{ generate_hash_key(['s.order_date', 's.status'], alias='hash_diff') }},
         s.order_id,
         s.order_date,
         s.status,
         s.load_ts,
         s.record_source
-    FROM source_data s
+    FROM source_data AS s
 
     {% if is_incremental() %}
     LEFT JOIN most_recent_satellite m ON s.sales_order_hk = m.sales_order_hk
@@ -60,4 +57,5 @@ new_or_changed AS (
     {% endif %}
 )
 
-SELECT * FROM new_or_changed
+SELECT *
+FROM new_or_changed

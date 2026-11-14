@@ -8,7 +8,7 @@ with source_data as (
 
 hashed as (
     select
-        {{generate_hash_key(['customer_id'], alias='customer_hk') }},
+        {{ generate_hash_key(['customer_id'], alias='customer_hk') }},
         customer_id,
         signup_date,
         country,

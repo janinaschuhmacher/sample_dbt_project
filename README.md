@@ -1,7 +1,6 @@
 # Local dbt Core + DuckDB Workspace
 
-This project is a local learning workspace for dbt Core and DuckDB. It does not
-require a warehouse account or credentials. 
+This project is a local learning workspace for dbt Core and DuckDB.
 
 ## Layout
 
@@ -16,6 +15,20 @@ For a lightweight spec-driven workflow, a future spec can state the model's
 purpose, grain, inputs, transformation rules, assumptions, and expected behavior
 before its SQL model is written. No spec or model is included yet.
 
+## Current project status
+
+This project is in the Data Vault build-out phase. The basic structure is in
+place and the model layers are split into staging, hubs, satellites, and links.
+
+Current state:
+
+- staging models for customers, sales orders, and sales order items
+- hub models for customers, sales orders, and sales order position items
+- satellite models for customer, order, and order item details
+- link models for customer-to-order and order-to-order-item relationships
+- local DuckDB profile configured for a project-local database
+
+
 ## Create the Python environment
 
 From this directory in WSL, check that Python is at least 3.10, then create and
@@ -28,8 +41,6 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-The dependency is installed only into `.venv`. Installing it requires access to
-the Python package index; no cloud data service or credentials are used.
 
 ## Configure the dbt profile
 
@@ -77,5 +88,29 @@ dbt parse --project-dir . --profiles-dir ~/.dbt
 ```
 
 `dbt debug` checks the local adapter connection and may create
-`data/learning.duckdb`. `dbt parse` checks the project configuration. There are
-intentionally no models to run yet.
+`data/learning.duckdb`. `dbt parse` checks the project configuration.
+
+## Formatting
+
+The project uses SQLFluff for formatting and linting the SQL files.
+
+Install the formatting/linting tools in the project venv:
+
+```bash
+source .venv/bin/activate
+python -m pip install sqlfluff sqlfluff-templater-dbt
+```
+
+The project includes a root `.sqlfluff` file with the config.
+
+Useful commands:
+
+```bash
+source .venv/bin/activate
+sqlfluff lint models
+sqlfluff fix models
+```
+
+`sqlfluff lint models` checks for issues, and `sqlfluff fix models` applies the
+safe automatic fixes. The dbt parse/build commands are the main validation
+for the project logic, while SQLFluff is mainly about style and consistency.

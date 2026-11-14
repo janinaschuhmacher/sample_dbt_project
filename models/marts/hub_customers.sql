@@ -29,9 +29,9 @@ deduped AS (
     FROM source_data
 
     {% if is_incremental() %}
-    WHERE customer_hk NOT IN (
-        SELECT customer_hk FROM {{ this }}
-    )
+        WHERE customer_hk NOT IN (
+            SELECT customer_hk FROM {{ this }}
+        )
     {% endif %}
 )
 

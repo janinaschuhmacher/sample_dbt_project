@@ -9,16 +9,16 @@
 }}
 
 WITH source_orders AS (
-    select
+    SELECT
     {{ generate_hash_key(
         ['sales_order_hk', 'customer_hk'],
         alias='sales_order_customer_lk'
     ) }},
-    sales_order_hk,
-    customer_hk,
-    load_ts,
-    record_source
-from {{ ref('stg_sales_orders') }}
+        sales_order_hk,
+        customer_hk,
+        load_ts,
+        record_source
+    FROM {{ ref('stg_sales_orders') }}
 ),
 
 new_records AS (

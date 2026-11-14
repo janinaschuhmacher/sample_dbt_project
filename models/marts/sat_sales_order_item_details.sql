@@ -8,11 +8,10 @@
     ) 
 }}
 
-with source_data as (
-    select
-        *
-    from {{ ref('stg_sales_order_items') }}
-)
+WITH source_data AS (
+    SELECT *
+    FROM {{ ref('stg_sales_order_items') }}
+),
 
 -- Get the most recent hash_diff for each sales_order_position_item_hk already in the Satellite
 most_recent_satellite AS (
@@ -41,12 +40,12 @@ most_recent_satellite AS (
 new_or_changed AS (
     SELECT
         s.sales_order_position_item_hk,
-        {{generate_hash_key(['s.product_id', 's.quantity', 's.unit_price', 's.line_amount'], alias='hash_diff') }},
+        {{ generate_hash_key(['s.product_id', 's.quantity', 's.unit_price', 's.line_amount'], alias='hash_diff') }},
         s.order_id,
         s.order_position,
-        s.product_id, 
-        s.quantity, 
-        s.unit_price, 
+        s.product_id,
+        s.quantity,
+        s.unit_price,
         s.line_amount,
         s.load_ts,
         s.record_source
